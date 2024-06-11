@@ -17,10 +17,11 @@
 import os
 import re
 from flask import Flask, request, render_template
+from markupsafe import escape
 app = Flask(__name__)
 
 # Set the absolute path to the template directory
-template_dir = os.path.abspath('Season-2/Level-3/templates')
+template_dir = os.path.abspath('templates')
 app.template_folder = template_dir
 
 # Hard-coded planet data
@@ -36,15 +37,15 @@ planet_data = {
 def index():
     if request.method == 'POST':
         planet = request.form.get('planet')
-        sanitized_planet = re.sub(r'[<>{}[\]]', '', planet if planet else '')
+        sanitized_planet = escape(planet)
 
         if sanitized_planet:
-            if 'script' in sanitized_planet.lower() :
+            if 'script' in sanitized_planet.lower():
                 return '<h2>Blocked</h2></p>'
-    
+            
             return render_template('details.html', 
-                                   planet=sanitized_planet, 
-                                   info=get_planet_info(sanitized_planet))
+                       planet=sanitized_planet, 
+                       info=get_planet_info(sanitized_planet))
         else:
             return '<h2>Please enter a planet name.</h2>'
 
